@@ -15,7 +15,7 @@ class BasketFeedCatcher:
 	def __init__(self):
 
 		self.BASKETFEED_NAME = 'utp-sales'
-		self.BASKETFEED_S3_BUCKET = 'transaction-raw-tega'
+		self.BASKETFEED_S3_BUCKET = 'tega-transaction-raw'
 		self.S3_CREDENTIALS = json.load(open(sys.argv[1], 'r'))
 		self.KI_CREDENTIALS = json.load(open(sys.argv[2], 'r'))
 
@@ -117,15 +117,11 @@ class BasketFeedCatcher:
 							
 							collected_recs.append(r_txt)
 
-						self.client_s3.put_object(Body=json.dumps(collected_recs), Bucket=self.BASKETFEED_S3_BUCKET, Key=self.JSON_FILE_NAME)
-
 						next_shit = resp['NextShardIterator']
 
 					else:
 
-						json.dump(collected_recs, open(self.JSON_FILE_NAME, 'w'))
-
-						self.client_s3.upload_fileobj(io.StringIO(json.dumps(collected_recs)), self.BASKETFEED_S3_BUCKET, self.JSON_FILE_NAME)
+						self.client_s3.put_object(Body=json.dumps(collected_recs), Bucket=self.BASKETFEED_S3_BUCKET, Key=self.JSON_FILE_NAME)
 
 						collected_recs.clear()
 
