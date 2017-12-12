@@ -17,11 +17,12 @@ class BasketFeedCatcher:
 		self.BASKETFEED_NAME = 'utp-sales'
 		self.BASKETFEED_S3_BUCKET = 'transaction-raw-tega'
 		self.S3_CREDENTIALS = json.load(open(sys.argv[1], 'r'))
+		self.KI_CREDENTIALS = json.load(open(sys.argv[2], 'r'))
 
 	def _set_time(self):
 
 		right_now = arrow.now('Australia/Sydney')
-		
+
 		self.THIS_HOUR = (right_now.floor('hour'), right_now.ceil('hour'))
 
 		self.JSON_FILE_NAME = '-'.join(['feed', right_now.format('YYYY-MM-DD'), right_now.format('HH'), '00', right_now.format('HH'), '59.json'])
@@ -55,7 +56,7 @@ class BasketFeedCatcher:
 
 	def connect_to_feed(self):
 
-		self.client_kinesis = boto3.Session().client('kinesis')
+		self.client_kinesis = boto3.Session().client('kinesis', **self.KI_CREDENTIALS)
 
 		st_desc = self.client_kinesis.describe_stream(StreamName=self.BASKETFEED_NAME)
 
